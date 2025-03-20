@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment 5_Web Design Development Quiz</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            user-select: none; /* Disable text selection */
+        }
+        .question-container { margin-bottom: 20px; }
+        .correct { background-color: lightgreen; }
+        .wrong { background-color: lightcoral; }
+        #scoreDisplay { display: none; }
+        #quizContainer { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Assignment 5</h1>
+    <h2><u>Web Design Development Quiz</u></h2>
+    <div id="userForm">
+        <label>Enter your Name:</label> <input type="text" id="userName"><br>
+        <label>Enter your Class:</label> <input type="text" id="userClass"><br>
+        <button id="startQuizBtn">Start Quiz</button>
+    </div>
+    <div id="quizContainer"></div>
+    <button id="submitBtn" style="display:none;">Submit Quiz</button>
+    <button id="viewScoreBtn" style="display:none;">View Score</button>
+    <div id="scoreDisplay"></div>
+
+    <script>
+        const questions = [
+            { question: "What is AJAX primarily used for?", answers: ["Handling server-side scripting", "Updating parts of a web page without reloading", "Creating databases", "Styling web pages"], correct: 1 },
+            { question: "Which method is commonly used to send AJAX requests in JavaScript?", answers: ["fetch()", "requestData()", "sendRequest()", "XMLRequest()"], correct: 0 },
+            { question: "What does JSON.parse() do?", answers: ["Converts a string to JSON", "Converts JSON to a string", "Creates an AJAX request", "Fetches data from a server"], correct: 0 },
+            { question: "What is the purpose of XMLHttpRequest?", answers: ["Styling web pages", "Handling asynchronous data exchange", "Creating SQL databases", "Making static HTML pages"], correct: 1 },
+            { question: "Which is NOT an advantage of AJAX?", answers: ["Improved user experience", "Reduced bandwidth usage", "Simpler code structure", "Enhanced interactivity"], correct: 2 },
+            { question: "What is the purpose of jQuery?", answers: ["Creating databases", "Handling asynchronous operations", "Manipulating DOM elements", "Performing arithmetic calculations"], correct: 2 },
+            { question: "How do you select an element by its ID in jQuery?", answers: ["$('id')", "$('#id')", "$('.id')", "$('element')"], correct: 1 },
+            { question: "What does the ng-repeat directive in AngularJS do?", answers: ["Handles events", "Applies CSS styles", "Creates loops for displaying data", "Sends AJAX requests"], correct: 2 },
+            { question: "Which operator is used for strict equality in JavaScript?", answers: ["==", "===", "=", "!=="], correct: 1 },
+            { question: "What is the output of typeof null in JavaScript?", answers: ["'null'", "'object'", "'undefined'", "'number'"], correct: 1 },
+            { question: "What does event.preventDefault() do?", answers: ["Stops the browser from executing an event", "Removes an HTML element", "Reloads the page", "Creates an AJAX request"], correct: 0 },
+            { question: "Which method is used to convert an object to a JSON string?", answers: ["JSON.parse()", "JSON.stringify()", "JSON.convert()", "JSON.toString()"], correct: 1 },
+            { question: "Which of the following is an alternative to AJAX for making HTTP requests in modern JavaScript?", answers: ["fetch API", "SQL Queries", "DOM Manipulation", "CSS Styling"], correct: 0 },
+            { question: "What is the purpose of the fetch API?", answers: ["Handling HTML rendering", "Making HTTP requests", "Creating animations", "Styling web pages"], correct: 1 },
+            { question: "What is the purpose of AngularJS?", answers: ["Performing database operations", "Creating CSS styles", "Building dynamic web applications", "Handling email services"], correct: 2 },
+            { question: "What does the $.ajax() function do in jQuery?", answers: ["Creates a new HTML element", "Sends an HTTP request", "Performs mathematical operations", "Changes CSS styles"], correct: 1 },
+            { question: "What is JSON used for?", answers: ["Creating animations", "Styling web pages", "Exchanging data between a server and a client", "Formatting text"], correct: 2 },
+            { question: "Which keyword is used to declare variables in JavaScript?", answers: ["var", "let", "const", "All of the above"], correct: 3 },
+            { question: "How do you detect a click event in JavaScript?", answers: ["clickEvent()", "onClick()", "addEventListener()", "eventTrigger()"], correct: 2 },
+            { question: "What is the purpose of AngularJS ng-model directive?", answers: ["Displaying data", "Handling forms", "Binding data to input elements", "Sending HTTP requests"], correct: 2 }
+        ];
+
+        document.getElementById('startQuizBtn').addEventListener('click', () => {
+            const name = document.getElementById('userName').value;
+            const userClass = document.getElementById('userClass').value;
+
+            if (!name || !userClass) {
+                alert('Please enter your name and class.');
+                return;
+            }
+
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'block';
+
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-container');
+                questionDiv.innerHTML = `<p>${index + 1}. ${q.question}</p>
+                    ${q.answers.map((answer, i) => `<label><input type="radio" name="question${index}" value="${i}"> ${answer}</label><br>`).join('')}`;
+                quizContainer.appendChild(questionDiv);
+            });
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                if (selectedOption) {
+                    const userAnswer = parseInt(selectedOption.value);
+                    if (userAnswer === q.correct) {
+                        score++;
+                        selectedOption.parentElement.classList.add('correct');
+                    } else {
+                        selectedOption.parentElement.classList.add('wrong');
+                        document.querySelectorAll(`input[name="question${index}"]`)[q.correct].parentElement.classList.add('correct');
+                    }
+                }
+            });
+            document.getElementById('viewScoreBtn').style.display = 'block';
+
+            document.getElementById('viewScoreBtn').addEventListener('click', () => {
+                document.getElementById('scoreDisplay').innerHTML = `<table border='1'><tr><th>Name</th><th>Class</th><th>Score</th></tr><tr><td>${document.getElementById('userName').value}</td><td>${document.getElementById('userClass').value}</td><td>${score} / 20</td></tr></table>`;
+                document.getElementById('scoreDisplay').style.display = 'block';
+            });
+        });
+
+        document.addEventListener('selectstart', e => e.preventDefault()); // Prevent text selection
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && ['c', 'x', 's', 'u'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
